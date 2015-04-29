@@ -1,0 +1,42 @@
+clear all;
+
+% create Bayes graph structure
+N = 10; 
+dag = zeros(N,N);
+Hole = 1; Board_1 = 2; Board_2 = 3; Board_3 = 4; CH = 5; SG = 6; FH = 7; Strength = 8;Bet = 9; Style = 10;Bluff = 11; Position = 12;
+node_names = {'Hole', 'Board_1', 'Board_2', 'Board_3', 'CH', 'SG', 'FH', 'Strength', 'Bet', 'Style', 'Bluff', 'Position' };
+dag([Hole, Board_1, Board_2, Board_3], CH) = 1;
+dag([CH, SG], FH) = 1;
+dag(FH, Strength) = 1;
+dag([Style, Position], Bluff) = 1;
+dag(Style, Bet) = 1;
+dag(Bluff, Bet) = 1;
+dag(Position, Bet) = 1;
+
+% create structure of each node
+discrete_nodes = 1:N;
+node_sizes = [1326 22100 52 52 9 3 9 3 3 4 1 1];
+bnet = mk_bnet(dag, node_sizes, 'discrete', discrete_nodes, 'names', node_names);
+
+% define parameters
+hole_prob = (1/1326).*ones(1, 1326);
+board1_prob = (1/22100).*ones(1, 22100);
+board2_prob = (1/52).*ones(52);
+card_type_prob = [0.1728, 0.438, 0.2352,0.0483, 0.048, 0.0299, 0.0255, 0.0019, 0.0004];
+
+bnet.CPD{Hole} = tabular_CPD(bnet, Hole, hole_prob);
+bnet.CPD{Board_1} = tabular_CPD(bnet, Board_1, board1_prob);
+bnet.CPD{Board_2} = tabular_CPD(bnet, Board_2, board2_prob);
+bnet.CPD{Board_3} = tabular_CPD(bnet, Board_3, board2_prob);
+bnet.CPD{CH} = tabular_CPD(bnet, CH, card_type_prob);
+bnet.CPD{SG} = tabular_CPD(bnet, SG, [1/3,1/3,1/3]);
+bnet.CPD{FH} = tabular_CPD(bnet, FH, card_type_prob);
+bnet.CPD{Strength} = tabular_CPD(bnet, Strength, [0.846, 0.1262, 0.0278]);
+bnet.CPD{Bet} = tabular_CPD(bnet, Bet, [1/3,1/3,1/3]);
+bnet.CPD{Style} = tabular_CPD(bnet, Style, [0.25, 0.25, 0.25, 0.25]);
+bnet.CPD{Bluff} = tabular_CPD(bnet, Bluff, [0.5]);
+bnet.CPD{Position} = tabular_CPD(bnet, Position, [0.5]);
+
+% draw graph
+%G = bnet.dag;
+%draw_graph(G);
