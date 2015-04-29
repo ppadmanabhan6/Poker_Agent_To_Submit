@@ -10,7 +10,7 @@
 function su_info = StageUpdater(info)
 
     global init_called_ap;
-    if init_called_ap ~= 100
+    if isempty(init_called_ap)
         init;
     end
     su_info = [];

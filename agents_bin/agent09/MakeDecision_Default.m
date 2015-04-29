@@ -90,7 +90,7 @@
 
 function decision = MakeDecision_Default(info)
     global init_called_ap;
-    if init_called_ap ~= 100
+    if isempty(init_called_ap)
         init;
     end
     
