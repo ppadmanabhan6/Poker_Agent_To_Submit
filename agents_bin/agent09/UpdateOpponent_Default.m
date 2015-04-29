@@ -15,6 +15,11 @@
 function oppo = UpdateOpponent(history,i)
     oppo = [];
     %% ----- FILL IN THE MISSING CODE ----- %%
+    global init_called_ap;
+    if init_called_ap ~= 100
+        init;
+    end
+    
     global total_data_ap;
     
     for val=1:1:10

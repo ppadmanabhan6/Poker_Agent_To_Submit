@@ -13,7 +13,7 @@ function [agents_info, money] = poker_main(agent_folder)
 
     % clear all;
     global history
-    global info
+    
     % reset the random number generator by time
     rng('default');
     rng('shuffle');
@@ -595,11 +595,11 @@ end
 function Fhands = ListFinalHands(active, hole_card, board_card)
     handCat = cell(1, size(active,2));
     for i = 1:size(active,2)
-        %if 
+        if active(i)
             Fhands{i} = FinalCategory(hole_card(i,:), board_card);
-       % else
-       %     Fhands{i} = '   **** ';
-       % end
+        else
+            Fhands{i} = '   **** ';
+        end
     end
 end
 

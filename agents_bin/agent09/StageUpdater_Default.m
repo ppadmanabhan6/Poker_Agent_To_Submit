@@ -8,27 +8,30 @@
 %%          MakeDecision function
 
 function su_info = StageUpdater(info)
+
+    global init_called_ap;
+    if init_called_ap ~= 100
+        init;
+    end
     su_info = [];
     
-    %% ----- FILL IN THE MISSING CODE ----- %%
-    
     [oppo_dis,bet_values] = PredictHoleCards(info);
-    disp(bet_values)
+    
     bet_values = [bet_values zeros(1,(169 - info.num_oppo))];
-    disp(size(bet_values))
+    
     su_info = [oppo_dis;bet_values];
-       %% ----- FILL IN THE MISSING CODE ----- %%
 end
 
 function [oppo_dis,bet_values] = PredictHoleCards(info)
+    global hole_card_default_ap;
     oppo_dis = [];
     bet_values = zeros(1,info.num_oppo);
-    global hole_card_default;
+    
     
     %% ----- FILL IN THE MISSING CODE ----- %%
     if info.stage == 0 || isempty(info.history.bet)
         bet_values(1,1:info.num_oppo) = 4;
-        oppo_dis = repmat(hole_card_default,info.num_oppo,1);
+        oppo_dis = repmat(hole_card_default_ap,info.num_oppo,1);
         return
     end
     old_oppo_dis = info.su_info(1:info.num_oppo,:);
@@ -36,15 +39,9 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
     board_card = board_card(board_card ~= -1);    
     bnet_model_card = generate_model_from_board(board_card);
     oppo_model = info.oppo{1,1};
-    num_oppo = length(oppo_model);
+    num_oppo = length(oppo_model) - 1;
     oppo_index =0;
     
-    if(size(info.stage_bet,1) > 1)
-        disp(size(info.stage_bet,1));
-    end
-    if(sum(info.curr_round_bet,2) ~=0)
-        disp(sum(info.curr_round_bet,1));
-    end
     for i=1:1:num_oppo
         if i == info.cur_pos
             oppo_index = oppo_index+2;
@@ -58,14 +55,18 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
         if(info.curr_round_bet(1,oppo_index) ~=0)
             dec = info.curr_round_bet(1,oppo_index);
         else
-            if info.active(oppo_index) == 0
+            if(info.active(oppo_index) == 0)
                 dec = 3;
             else
                 val = size(info.stage_bet,1);
-                if info.stage_bet(val,oppo_index)==0
+                if val == 0
                     dec = 4;
                 else
-                    dec = info.stage_bet(val,oppo_index);
+                    if(info.stage_bet(val,oppo_index)==0)
+                        dec = 4;
+                    else
+                        dec = info.stage_bet(val,oppo_index);
+                    end
                 end
             end
         end
@@ -90,7 +91,7 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
         
         if dec == 4
             if isempty(old_oppo_dis)
-                dis = hole_card_default;
+                dis = hole_card_default_ap;
             else
                 dis = old_oppo_dis(i,:);
             end
@@ -112,9 +113,6 @@ function [oppo_dis,bet_values] = PredictHoleCards(info)
                 m1 = marginal_nodes(engine,2);
                 dis1= (m1.T)';   
             end
-            disp('Opponent final hand');
-            i
-            dis1
         end
         bet_values(i) = oppo_bet_value;
         oppo_dis = [oppo_dis; dis];

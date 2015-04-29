@@ -114,7 +114,7 @@ function decision = MakeDecisionPostFlop(info)
     display('MakeDecisionPostFlop')
 	%% fill in missing code here for Part I
     
-    if size(info.history.board,1) > 30
+    if size(info.history.board,1) > 100
         win_prob = PredictWin(info);
     else
         win_prob = PredictWin1(info);
@@ -238,7 +238,7 @@ function win_prob = PredictWin(info)
 
         
     end
-    win_prob = (win_count/Num_trials)
+    win_prob = (win_count/Num_trials);
 end
 
 function win_prob = PredictWin1(info)
@@ -277,7 +277,7 @@ function win_prob = PredictWin1(info)
         end
         
     end
-    win_prob = (win_count/Num_trials) 
+    win_prob = (win_count/Num_trials); 
 end
 
 
